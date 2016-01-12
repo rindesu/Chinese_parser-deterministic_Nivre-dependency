@@ -12,28 +12,31 @@ Nivre算法一共定义了四种操作，采用哪种操作是由SVM分类器决
 
 考虑远距离依存关系的Nivre算法是基于依存关系不交叉的依存公理：如果A成分直接依存于B成分，而C成分在句子中位于A和B之间，那么C或者直接依存于A，或者直接依存于B，或者直接依存于A和B之间的某一成分。假如I的栈顶元素n不依存于t，并且t的左侧的父亲节点与n存在依存关系，则I中一定不存在任何元素依存于t，从栈中弹出t，不会影响其后的解析。</br>
 考虑远距离依存关系的Nivre算法对Reduce和shift操作作了进一步明确的划分。</br>
->>>Reduce：假如n和t相互间没有依存关系，且t有父节点在其左侧，且父节点与n存在依存关系，则弹出S中的栈顶元素t，于是三元组变成<S,n|I,A>。</br>
-    Shift：上述三种情况都不满足时，把n压入栈S中，于是三元组变成<n|t|S,I,A>。</br>
+>Reduce：假如n和t相互间没有依存关系，且t有父节点在其左侧，且父节点与n存在依存关系，则弹出S中的栈顶元素t，于是三元组变成<S,n|I,A>。</br>
+>Shift：上述三种情况都不满足时，把n压入栈S中，于是三元组变成<n|t|S,I,A>。</br>
+
 句长为N时，最多只需2N个动作就可以完成解析，时间复杂度为O(N)。</br>
 </br>
 基于SVM的Nivre算法是根据SVM分类器分类的结果，在Right,left,reduce,shift四个操作中选择相应的操作。对四个操作两两之间训练一个分类器，一共得到6个分类器。用训练模型对测试数据进行句法分析时，根据6个分类器投票的结果选择相应的操作。</br>
 ![](https://github.com/rindesu/Chinese_parser-deterministic_Nivre-dependency/tree/master/img/nivre.png)
  
 【使用说明】</br>
-train_model文件夹中的训练模型是用本项目利用哈工大树库中的前8000个句子作为训练数据得到的训练模型。直接利用该模型进行句法分析。
-	输入：词性标注序列。
-输入格式为：词0/词性 词1/词性 词2/词性 ……如：抢险/v 救援/v 责无旁贷/i
-test_data.txt提供了哈工大树库最后2000个句子的词性标注结果。
-	输出：依存句法分析结果。
-输出格式为：词0/词性/父节点位置 词1/词性/父节点位置 ……（句子第一个词的位置为0）如：抢险/v/2 救援/v/0 责无旁贷/i/-1
-输出结果中，一个句子可能有多个节点的父节点为-1，这是因为程序在初始化时将各个节点的父节点都赋值为-1。
+train_model文件夹中的训练模型是用本项目利用哈工大树库中的前8000个句子作为训练数据得到的训练模型。直接利用该模型进行句法分析。</br>
+
+输入：词性标注序列。</br>
+输入格式为：词0/词性 词1/词性 词2/词性 ……如：抢险/v 救援/v 责无旁贷/i</br>
+test_data.txt提供了哈工大树库最后2000个句子的词性标注结果。</br>
+
+输出：依存句法分析结果。</br>
+输出格式为：词0/词性/父节点位置 词1/词性/父节点位置 ……（句子第一个词的位置为0）如：抢险/v/2 救援/v/0 责无旁贷/i/-1</br>
+输出结果中，一个句子可能有多个节点的父节点为-1，这是因为程序在初始化时将各个节点的父节点都赋值为-1。</br>
  
-【项目实现】
+【项目实现】</br>
 （1）选取特征，调用libsvm工具包对树库语料进行SVM训练（svm.h,svm.cpp）。读取树库时使用tinyxml解析器（tinystr.h,tinystr.cpp,tinyxml.h,tinyxml.cpp,
 tinyxmlerror.cpp,tinyxmlparser.cpp）。训练模型保存在trainx_model中（x=1,2,3,
 4,5,6）。
 （2）用（1）中得到的训练模型对给定的词性标注序列进行句法分析，并输出结果。
-![image](https://github.com/rindesu/Chinese_parser-deterministic_Nivre-dependency/tree/master/img/project_frame.png)
+![](https://github.com/rindesu/Chinese_parser-deterministic_Nivre-dependency/tree/master/img/project_frame.png)
 	int BS(char * arr, int width, int s, int e, char* str)
 在字符串数组arr中二分查找字符串str，起止下标分别为s和e
 	void calcu_feature_vec()
