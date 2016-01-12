@@ -36,18 +36,19 @@ test_data.txt提供了哈工大树库最后2000个句子的词性标注结果。
 （2）用（1）中得到的训练模型对给定的词性标注序列进行句法分析，并输出结果。</br>
 ![](https://github.com/rindesu/Chinese_parser-deterministic_Nivre-dependency/tree/master/img/project_frame.png)
 >int BS(char * arr, int width, int s, int e, char* str)</br>
-在字符串数组arr中二分查找字符串str，起止下标分别为s和e
+在字符串数组arr中二分查找字符串str，起止下标分别为s和e</br>
 >void calcu_feature_vec()</br>
-计算特征向量
+计算特征向量</br>
 >void train_sent_parse()</br>
-训练数据（单句）parse
+训练数据（单句）parse</br>
 >void SVM_train()</br>
-训练分类器
+训练分类器</br>
 >void test_sent_parse()</br>
-测试数据（单句）parse
->void document_parse()
+测试数据（单句）parse</br>
+>void document_parse()</br>
 parse一个xml测试文档</br>
 </br>
+
 【特征选取与数字化】</br>
 特征选取:</br>
 选取如下9个特征组成特征向量，其中t-1,t-2分别指S栈顶第二和第三个元素，n+1,n+2分别指I栈顶第二和第三个元素。</br>
