@@ -32,46 +32,41 @@ test_data.txt提供了哈工大树库最后2000个句子的词性标注结果。
 输出结果中，一个句子可能有多个节点的父节点为-1，这是因为程序在初始化时将各个节点的父节点都赋值为-1。</br>
  
 【项目实现】</br>
-（1）选取特征，调用libsvm工具包对树库语料进行SVM训练（svm.h,svm.cpp）。读取树库时使用tinyxml解析器（tinystr.h,tinystr.cpp,tinyxml.h,tinyxml.cpp,
-tinyxmlerror.cpp,tinyxmlparser.cpp）。训练模型保存在trainx_model中（x=1,2,3,
-4,5,6）。
-（2）用（1）中得到的训练模型对给定的词性标注序列进行句法分析，并输出结果。
+（1）选取特征，调用libsvm工具包对树库语料进行SVM训练（svm.h,svm.cpp）。读取树库时使用tinyxml解析器（tinystr.h,tinystr.cpp,tinyxml.h,tinyxml.cpp,tinyxmlerror.cpp,tinyxmlparser.cpp）。训练模型保存在trainx_model中（x=1,2,3,4,5,6）。</br>
+（2）用（1）中得到的训练模型对给定的词性标注序列进行句法分析，并输出结果。</br>
 ![](https://github.com/rindesu/Chinese_parser-deterministic_Nivre-dependency/tree/master/img/project_frame.png)
-	int BS(char * arr, int width, int s, int e, char* str)
+>int BS(char * arr, int width, int s, int e, char* str)</br>
 在字符串数组arr中二分查找字符串str，起止下标分别为s和e
-	void calcu_feature_vec()
+>void calcu_feature_vec()</br>
 计算特征向量
-	void train_sent_parse()
+>void train_sent_parse()</br>
 训练数据（单句）parse
-	void SVM_train()
+>void SVM_train()</br>
 训练分类器
-	void test_sent_parse()
+>void test_sent_parse()</br>
 测试数据（单句）parse
-	void document_parse()
-parse一个xml测试文档
+>void document_parse()
+parse一个xml测试文档</br>
+</br>
+【特征选取与数字化】</br>
+特征选取:</br>
+选取如下9个特征组成特征向量，其中t-1,t-2分别指S栈顶第二和第三个元素，n+1,n+2分别指I栈顶第二和第三个元素。</br>
+节点t,t-1,t-2的词性</br>
+节点n,n+1,n+2的词性</br>
+节点t,n的词</br>
+节点t与n在句中的距离</br>
 
-【特征选取与数字化】
-	特征选取
-选取如下9个特征组成特征向量，其中t-1,t-2分别指S栈顶第二和第三个元素，n+1,n+2分别指I栈顶第二和第三个元素。
-节点t,t-1,t-2的词性
-节点n,n+1,n+2的词性
-节点t,n的词
-节点t与n在句中的距离
-	特征数字化
-	根据哈工大树库所用标准，词性一共有28种情况。
-	本项目将哈工大树库中的词存为一个词典，大小为24728。考虑到有些词不能在这个词典中找到，那么一个词的在词典中的位置一共有24729种情况。
-	若栈S为空，则令节点t和n的距离为0，若t和n的距离大于29，则令其距离为29。那么t和n的距离一共有30种情况。
-	将单个特征的可能的取值按大小排列（如果是非数字特征，则按字典序排列，并与数组下标做对应的数字转换）。然后将所有特征可能的取值按特征出现的顺序进行排列，得到一个28*6+24729*2+30维的特征向量。解析器的每一次操作，都对应这样一个特征向量。第i类操作的特征向量保存在testi.txt中（i=1,2,3,4）。
-
-【训练及测试数据】
-哈工大HIT树库中共有10000句中文句子。本项目将其中前8000句作为训练数据，后2000句作为测试数据。
-采用以下评价标准：
-Dependency Accuracy(DA,考察父节点的标注准确率)
-本项目中，DA=0.769 。
-
-
-
-【参考文献】
-[1] 高玲玲, 基于SVM的确定性中文依存关系解析, 硕士学位论文
-[2] 杨洋, 基于依存语法的汉语句法分析研究, 硕士学位论文
+特征数字化:</br>
+1)根据哈工大树库所用标准，词性一共有28种情况。</br>
+2)本项目将哈工大树库中的词存为一个词典，大小为24728。考虑到有些词不能在这个词典中找到，那么一个词的在词典中的位置一共有24729种情况。</br>
+3)若栈S为空，则令节点t和n的距离为0，若t和n的距离大于29，则令其距离为29。那么t和n的距离一共有30种情况。</br>
+4)将单个特征的可能的取值按大小排列（如果是非数字特征，则按字典序排列，并与数组下标做对应的数字转换）。然后将所有特征可能的取值按特征出现的顺序进行排列，得到一个28*6+24729*2+30维的特征向量。解析器的每一次操作，都对应这样一个特征向量。第i类操作的特征向量保存在testi.txt中（i=1,2,3,4）。</br>
+</br>
+【训练及测试数据】</br>
+哈工大HIT树库中共有10000句中文句子。本项目将其中前8000句作为训练数据，后2000个句子作为测试数据（提供50个句子）。</br>
+本项目中，DA（Dependency Accuracy,考察父节点的标注准确率）=0.769 。</br>
+</br>
+【参考文献】</br>
+[1] 高玲玲, 基于SVM的确定性中文依存关系解析, 硕士学位论文</br>
+[2] 杨洋, 基于依存语法的汉语句法分析研究, 硕士学位论文</br>
 
